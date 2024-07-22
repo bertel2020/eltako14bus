@@ -918,13 +918,14 @@ class _TemperatureAndHumiditySensor(EEP):
         humidity = (msg.data[1] / cls.usr) * 100.0
         # -20°C .. +60°C
         temperature = ((msg.data[2] / cls.usr) * (cls.temp_max - cls.temp_min)) + cls.temp_min
-        
+        # 
+        support_voltage = (msg.data[0] / 250.0) * 5.0
 
-        return cls(temperature,humidity,learn_button)
+        return cls(support_voltage,temperature,humidity,learn_button)
 
     def encode_message(self, address):
         data = bytearray([0, 0, 0, 0])
-        data[0] = 0x00
+        data[0] = int((self.support_voltage / self.usr) * 5.0)
         data[1] = int((self.humidity / 100.0) * self.usr)
         data[2] = int((self.current_temperature / (self.temp_max - self.temp_min)) * self.usr)
         data[3] = (self.learn_button << 3)
