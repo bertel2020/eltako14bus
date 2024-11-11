@@ -457,6 +457,48 @@ class _AirQualitySensor(EEP):
 class A5_09_0C(_AirQualitySensor):
     """Air quality sensor"""
 
+
+# ======================================
+# MARK: - CO2 Sensor
+# ======================================
+
+class _CO2Sensor(EEP):
+    temp_min = 0.0
+    temp_max = 51.0
+
+    @classmethod
+    def decode_message(cls, msg):
+        if msg.org != 0x07:
+            raise WrongOrgError
+                
+        temperature = (msg.data[2] * 0.2)
+        concentration = (msg.data[1] * 10.0)
+        humidity = (msg.data[0] * 0.5)
+        
+        return cls(temperature, concentration, humidity)
+
+    @property
+    def temperature(self):
+        return self._temperature
+        
+    @property
+    def concentration(self):
+        return self._concentration
+        
+    @property
+    def humidity(self):
+        return self._humidity
+    
+
+    def __init__(self, temperature:int=0, concentration:int=0, humidity:int=0):
+        self._temperature = temperature
+        self._concentration = concentration
+        self._humidity = humidity
+
+class A5_09_04(_CO2Sensor):
+    """CO2, , Humidity and Temperature sensor"""
+
+
 # ======================================
 # MARK: - Central Command
 # ======================================
