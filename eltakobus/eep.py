@@ -477,6 +477,17 @@ class _CO2Sensor(EEP):
         
         return cls(temperature, concentration, humidity)
 
+    def encode_message(self, address):
+        data = bytearray([0, 0, 0, 0])
+        data[0] = int(self.humidity / 0.5)
+        data[1] = int(self.concentration / 10)
+        data[2] = int(self.temperature / 0.2)
+        data[3] = (self.learn_button << 3)
+        
+        status = 0x00
+
+        return Regular4BSMessage(address, status, data, True)
+    
     @property
     def temperature(self):
         return self._temperature
