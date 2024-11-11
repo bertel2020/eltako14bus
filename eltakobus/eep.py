@@ -840,7 +840,7 @@ class _WeatherStation(EEP):
         learn_button = (msg.data[3] & 0x08) >> 3
 
         if identifier == 0x01:
-            dawn_sensor = (msg.data[0] / 255.0) * 999.0
+            dawn_sensor = (msg.data[0] / 255.0) * 1000.0
             temperature = cls.temp_min + ((msg.data[1] / 255.0) * (cls.temp_max - cls.temp_min))
             wind_speed = (msg.data[2] / 255.0) * 70.0
             day_night = (msg.data[3] & 0x04) >> 2
