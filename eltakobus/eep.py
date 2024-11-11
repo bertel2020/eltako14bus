@@ -507,7 +507,7 @@ class _CO2Sensor(EEP):
         self._humidity = humidity
 
 class A5_09_04(_CO2Sensor):
-    """CO2, , Humidity and Temperature sensor"""
+    """CO2, Humidity and Temperature sensor"""
 
 
 # ======================================
