@@ -138,7 +138,8 @@ class WindowHandlePosition(int, Enum):
         # left  to down 0b1111
         # right to down 0b1111
         if movement == 0xF: 
-            return WindowHandlePosition.CLOSED
+            #return WindowHandlePosition.CLOSED
+            return WindowHandlePosition.TILT
         # up to left    0b11X0
         # down to left  0b11X0
         # up to right   0b11X0
@@ -148,7 +149,8 @@ class WindowHandlePosition(int, Enum):
         # right to up 0b1101
         # left to up  0b1101
         elif movement == 0xD:
-            return WindowHandlePosition.TILT
+            #return WindowHandlePosition.TILT
+            return WindowHandlePosition.CLOSED
         
         raise Exception(f"Movement data ({movement}) not handled")
 
