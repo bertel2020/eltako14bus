@@ -1053,9 +1053,10 @@ class _TemperatureAndHumiditySensor(EEP):
     def learn_button(self):
         return self._learn_button
     
-    def __init__(self, temperature:int=0, humidity:int=0, learn_button:int=1):
+    def __init__(self, temperature:int=0, humidity:int=0, supply_voltage:int=0, learn_button:int=1):
         self._temperature = temperature
         self._humidity = humidity
+        self._supply_voltage = supply_voltage
         self._learn_button = learn_button
 
 class A5_04_02(_TemperatureAndHumiditySensor):
