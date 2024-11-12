@@ -481,15 +481,19 @@ class _CO2Sensor(EEP):
         data = bytearray([0, 0, 0, 0])
         data[0] = int(self.humidity / 0.5)
         data[1] = int(self.concentration / 10)
-        data[2] = int(self.temperature / 0.2)
+        data[2] = int(self.current_temperature / 0.2)
         data[3] = (self.learn_button << 3)
         
         status = 0x00
 
         return Regular4BSMessage(address, status, data, True)
-    
+
     @property
     def temperature(self):
+        return self._temperature
+    
+    @property
+    def current_temperature(self):
         return self._temperature
         
     @property
@@ -1015,14 +1019,14 @@ class _TemperatureAndHumiditySensor(EEP):
         # -20°C .. +60°C
         temperature = ((msg.data[2] / cls.usr) * (cls.temp_max - cls.temp_min)) + cls.temp_min
         # Battery voltage
-        support_voltage = round(msg.data[0] * 0.025), 1)
+        supply_voltage = round(msg.data[0] * 0.025), 1)
 
-        return cls(temperature,humidity,support_voltage,learn_button)
+        return cls(temperature,humidity,supply_voltage,learn_button)
 
     def encode_message(self, address):
         data = bytearray([0, 0, 0, 0])
         #data[0] = 0x00
-        data[0] = int((self.support_voltage / 0.025)
+        data[0] = int((self.supply_voltage / 0.025)
         data[1] = int((self.humidity / 100.0) * self.usr)
         data[2] = int(((self.current_temperature - self.temp_min) / (self.temp_max - self.temp_min)) * self.usr)
         data[3] = (self.learn_button << 3)
@@ -1040,8 +1044,8 @@ class _TemperatureAndHumiditySensor(EEP):
         return self._humidity
 
     @property
-    def support_voltage(self):
-        return self._support_voltage
+    def supply_voltage(self):
+        return self._supply_voltage
     
     @property
     def learn_button(self):
