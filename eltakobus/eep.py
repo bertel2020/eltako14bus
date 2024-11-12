@@ -1019,7 +1019,7 @@ class _TemperatureAndHumiditySensor(EEP):
         # -20°C .. +60°C
         temperature = ((msg.data[2] / cls.usr) * (cls.temp_max - cls.temp_min)) + cls.temp_min
         # Battery voltage
-        supply_voltage = round(msg.data[0] * 0.025), 1)
+        supply_voltage = round((msg.data[0] * 0.025), 1)
 
         return cls(temperature,humidity,supply_voltage,learn_button)
 
