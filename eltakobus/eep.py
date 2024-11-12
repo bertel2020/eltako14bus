@@ -471,9 +471,9 @@ class _CO2Sensor(EEP):
         if msg.org != 0x07:
             raise WrongOrgError
                 
-        temperature = (msg.data[2] * 0.2)
-        concentration = (msg.data[1] * 10.0)
-        humidity = (msg.data[0] * 0.5)
+        temperature = round((msg.data[2] * 0.2), 1)
+        concentration = round((msg.data[1] * 10.0), 0)
+        humidity = round((msg.data[0] * 0.5), 0)
         
         return cls(temperature, concentration, humidity)
 
@@ -1014,13 +1014,15 @@ class _TemperatureAndHumiditySensor(EEP):
         humidity = (msg.data[1] / cls.usr) * 100.0
         # -20°C .. +60°C
         temperature = ((msg.data[2] / cls.usr) * (cls.temp_max - cls.temp_min)) + cls.temp_min
-        
+        # Battery voltage
+        support_voltage = round(msg.data[0] * 0.025), 1)
 
-        return cls(temperature,humidity,learn_button)
+        return cls(temperature,humidity,support_voltage,learn_button)
 
     def encode_message(self, address):
         data = bytearray([0, 0, 0, 0])
-        data[0] = 0x00
+        #data[0] = 0x00
+        data[0] = int((self.support_voltage / 0.025)
         data[1] = int((self.humidity / 100.0) * self.usr)
         data[2] = int(((self.current_temperature - self.temp_min) / (self.temp_max - self.temp_min)) * self.usr)
         data[3] = (self.learn_button << 3)
