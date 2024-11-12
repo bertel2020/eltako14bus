@@ -1026,7 +1026,7 @@ class _TemperatureAndHumiditySensor(EEP):
     def encode_message(self, address):
         data = bytearray([0, 0, 0, 0])
         #data[0] = 0x00
-        data[0] = int((self.supply_voltage / 0.025)
+        data[0] = int(self.supply_voltage / 0.025)
         data[1] = int((self.humidity / 100.0) * self.usr)
         data[2] = int(((self.current_temperature - self.temp_min) / (self.temp_max - self.temp_min)) * self.usr)
         data[3] = (self.learn_button << 3)
