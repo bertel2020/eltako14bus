@@ -1038,6 +1038,10 @@ class _TemperatureAndHumiditySensor(EEP):
     @property
     def humidity(self):
         return self._humidity
+
+    @property
+    def support_voltage(self):
+        return self._support_voltage
     
     @property
     def learn_button(self):
