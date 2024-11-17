@@ -744,7 +744,7 @@ class A5_10_03(_TempControl):
 
 class _HeatingCooling(EEP):
     min_temp:float = 0
-    min_temp2:float = 9 # Min Set-Temp for FUTH
+    min_temp2:float = 8 # Min Set-Temp for FUTH
     max_temp:float = 40
     usr:float = 255.0 # unscaled range 
 
