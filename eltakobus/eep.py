@@ -803,6 +803,23 @@ class _HeatingCooling(EEP):
 
         return Regular4BSMessage(address, status, data, True)
 
+    
+    def encode_message2(self, address):
+        data = bytearray([0, 0, 0, 0])
+
+        data[3] = 0x08
+
+        data[2] = 0x00
+
+        data[1] = int(self.target_temperature / self.max_temp * self.usr)
+        
+        data[0] = 0x00
+        
+        status = 0x80
+
+        return Regular4BSMessage(address, status, data, True)
+    
+    
     @property
     def mode(self) -> HeaterMode:
         return self._mode
