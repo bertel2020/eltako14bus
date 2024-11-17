@@ -4,6 +4,7 @@ from eltakobus.util import DefaultEnum
 from .error import NotImplementedError, WrongOrgError
 from .message import RPSMessage, Regular1BSMessage, Regular4BSMessage
 import re
+import math
 
 class EEP:
     __sublasses_by_string = {}
@@ -812,7 +813,7 @@ class _HeatingCooling(EEP):
 
         data[2] = 0x00
 
-        data[1] = int(self.target_temperature / self.max_temp * self.usr)
+        data[1] = math.ceil(self.target_temperature / self.max_temp * self.usr)
         
         data[0] = 0x00
         
