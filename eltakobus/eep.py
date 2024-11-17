@@ -811,7 +811,7 @@ class _HeatingCooling(EEP):
 
         data[2] = 0x00
 
-        data[1] = round(self.target_temperature / self.max_temp * self.usr)
+        data[1] = round(self.target_temperature / self.max_temp * 256)
         
         data[0] = 0x00
         
