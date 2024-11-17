@@ -766,7 +766,6 @@ class _HeatingCooling(EEP):
         NIGHT_SET_BACK_4_DEGREES = 0x50     # night set back (-4°K)
         OFF = 0x10                          # Off
         UNKNOWN = 0x00
-        FUTH_DEFAULT = 0x0F
         
     @classmethod
     def decode_message(cls, msg):
