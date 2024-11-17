@@ -816,7 +816,7 @@ class _HeatingCooling(EEP):
         
         data[0] = 0x00
         
-        status = 0x80
+        status = 0x00
 
         return Regular4BSMessage(address, status, data, True)
     
