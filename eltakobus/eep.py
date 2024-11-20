@@ -855,7 +855,7 @@ class _HeatingCoolingHumidity(EEP):
     @classmethod
     def decode_message(cls, msg):
         if msg.org == 0x07:
-            if data[3] == 0x08:
+            if msg.data[3] == 0x08:
                 target_temperature = (msg.data[0] / cls.usr) * (cls.temp_max - cls.temp_min) + cls.temp_min
                 # 0 .. 100%
                 humidity = (msg.data[1] / cls.usr) * 100.0
