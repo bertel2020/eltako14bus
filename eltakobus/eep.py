@@ -773,7 +773,7 @@ class _HeatingCooling(EEP):
 
             priority = cls.ControllerPriority.find_by_code(msg.data[3])
             # reversed range (from 40° to 0°)
-            current_temp = ((cls.usr - msg.data[2]) / cls.usr) * cls.max_temp
+            current_temp = round(((cls.usr - msg.data[2]) / cls.usr) * cls.max_temp, 1)
             target_temp = (msg.data[1] / cls.usr) * cls.max_temp
             
             try:
