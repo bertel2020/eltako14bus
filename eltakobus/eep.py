@@ -93,6 +93,14 @@ class _RockerSwitch(EEP):
         
         return RPSMessage(address, status, data, True)
 
+    def encode_message_released(self, address):
+        data = bytearray([0])
+        data[0] = 0x0
+        
+        status = 0x20
+        
+        return RPSMessage(address, status, data, True)
+
     @property
     def rocker_first_action(self):
         return self._rocker_first_action
