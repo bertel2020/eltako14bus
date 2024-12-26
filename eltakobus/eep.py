@@ -1624,3 +1624,139 @@ class _DigitalInputsAndTemperature(EEP):
 
 class A5_30_03(_DigitalInputsAndTemperature):
     """Digital Inputs"""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class _OccupancySensor(EEP):
+
+    @classmethod
+    def decode_message(cls, msg):
+        if msg.org != 0x07:
+            raise WrongOrgError
+        
+        
+        support_voltage = msg.data[0] / 250.0 * 5.0
+        
+        pir_status = msg.data[2]
+        pir_status_on = pir_status >= 128
+        
+        learn_button = (msg.data[3] & 0x08) >> 3
+        support_volrage_availability = msg.data[3] & 0x01
+
+        return cls(support_voltage, pir_status, pir_status_on, learn_button, support_volrage_availability)
+
+    def encode_message(self, address):
+        data = bytearray([0, 0, 0, 0])
+        
+        data[0] = int( self.support_voltage * 255.0 / 5.0 )
+        data[1] = 0
+        data[2] = self._pir_status
+        data[3] = (self.learn_button << 3) | self._support_volrage_availability
+
+        status = 0x00
+        
+        return Regular4BSMessage(address, status, data, True)
+
+    @property
+    def support_volrage_availability(self):
+        return self._support_volrage_availability
+
+    @property
+    def support_voltage(self):
+        return self._support_voltage
+
+    @property
+    def learn_button(self):
+        return self._learn_button
+
+    @property
+    def pir_status(self):
+        return self._pir_status
+    
+    @property
+    def pir_status_on(self):
+        return self._pir_status_on
+
+    def __init__(self, support_voltage, pir_status, pir_status_on, learn_button, support_volrage_availability):
+        self._support_voltage = support_voltage
+        self._pir_status = pir_status
+        self._pir_status_on = pir_status_on
+        self._learn_button = learn_button
+        self._support_volrage_availability = support_volrage_availability
+
+class A5_07_01(_OccupancySensor):
+    """Occupancy Sensor"""
+
+
+
+
+
+
+class _PermundoPSC(EEP):
+
+    @classmethod
+    def decode_message(cls, msg):
+        if msg.org != 0xD2:
+            raise WrongOrgError
+        
+        status = msg.data[2]
+        status_on = status > 128
+        
+        return cls(status, status_on)
+    
+
+    def encode_message(self, address):
+        data = bytearray([0, 0, 0])
+        
+        data[0] = 0
+        data[1] = 0
+        data[2] = self._status
+
+        status = 0x00
+        
+        return Regular4BSMessage(address, status, data, True)
+    
+    
+    @property
+    def status(self):
+        return self._status
+
+    @property
+    def status_on(self):
+        return self._status_on
+
+    def __init__(self, status, status_on):
+        self._status = status
+        self._status_on = status_on
+
+class D2_01_09(_PermundoPSC):
+    """Permundo PSC132/234 1-Channel Relay"""
+
+
+
+
+
