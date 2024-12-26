@@ -233,7 +233,7 @@ class RS485SerialInterfaceV2(BusInterface, threading.Thread):
                     while len(self._buffer) >= 14:
                         try:
                             parsed_msg = prettify( ESP2Message.parse(bytes(self._buffer[:14])) )
-                            # self.log.debug("Received Message: %s", parsed_msg)
+                            self.log.debug("Received Message: %s", parsed_msg)
                         except ParseError:
                             self._buffer = self._buffer[1:]
                         else:
