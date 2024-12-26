@@ -14,7 +14,7 @@ def prettify(message):
     classes = [EltakoBusLock, EltakoBusUnlock, EltakoDiscoveryRequest,
             EltakoDiscoveryReply, EltakoMemoryRequest, EltakoMemoryResponse,
             EltakoTimeout, EltakoPoll, EltakoPollForced, EltakoWrappedRPS,
-            EltakoWrapped4BS, RPSMessage, Regular1BSMessage, Regular4BSMessage, TeachIn4BSMessage2,
+            EltakoWrapped4BS, RPSMessage, Regular1BSMessage, Regular4BSMessage, RegularVLDMessage, TeachIn4BSMessage2,
             EltakoMessage]
 
     for c in classes:
@@ -172,6 +172,44 @@ class Regular4BSMessage(_4BSMessage):
 
     def __repr__(self):
         return "<%s from %s, data %s, status = 0x%02x>"%(type(self).__name__, b2s(self.address), b2s(self.data), self.status)
+
+
+class _VLDMessage(ESP2Message):
+    org = 0xD2
+
+    def __init__(self, address, status, data, outgoing=False):
+        self.address = address
+        self.status = status
+        self.data = data
+        self.outgoing = outgoing
+
+    h_seq = property(lambda self: 3 if self.outgoing else 0)
+
+    body = property(lambda self: bytes(((self.h_seq << 5) + 11, self.org, *self.data, *self.address, self.status)))
+
+    @classmethod
+    def parse(cls, data):
+        esp2message = super().parse(data)
+        try:
+            outgoing = {(3 << 5) + 11: True, (0 << 5) + 11: False}[esp2message.body[0]]
+        except KeyError:
+            raise ParseError("Code is neither RRT nor TRT")
+        if esp2message.body[1] != cls.org:
+            raise ParseError("Not a VLD message")
+        data = esp2message.body[2:6]
+        teach_in = not (data[3] & 0x08)
+        if teach_in != cls.teach_in:
+            raise ParseError("LRN bit does not match")
+        address = esp2message.body[6:10]
+        status = esp2message.body[10]
+        return cls(address, status, data, outgoing)
+
+class RegularVLDMessage(_VLDMessage):
+    teach_in = False
+
+    def __repr__(self):
+        return "<%s from %s, data %s, status = 0x%02x>"%(type(self).__name__, b2s(self.address), b2s(self.data), self.status)
+
 
 class TeachIn4BSMessage2(_4BSMessage):
     """A Variation 2 (LRN type 1 and nothing bidirectional) 4BS Teach-In telegram"""
