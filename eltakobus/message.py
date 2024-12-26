@@ -185,7 +185,7 @@ class _VLDMessage(ESP2Message):
 
     h_seq = property(lambda self: 3 if self.outgoing else 0)
 
-    body = property(lambda self: bytes(((self.h_seq << 5) + 11, self.org, *self.data, *self.address, self.status)))
+    body = property(lambda self: bytes(((self.h_seq << 5) + 11, self.org, *self.data, 0, *self.address, self.status)))
 
     @classmethod
     def parse(cls, data):
