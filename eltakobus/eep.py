@@ -1628,47 +1628,6 @@ class A5_30_03(_DigitalInputsAndTemperature):
 
 
 
-class _PermundoPSC(EEP):
-
-    @classmethod
-    def decode_message(cls, msg):
-        if msg.org != 0xD2:
-            raise WrongOrgError
-        
-        status = msg.data[2]
-        status_on = status > 128
-        
-        return cls(status, status_on)
-    
-
-    def encode_message(self, address):
-        data = bytearray([0, 0, 0])
-        
-        data[0] = 0
-        data[1] = 0
-        data[2] = self._status
-
-        status = 0x00
-        
-        return Regular4BSMessage(address, status, data, True)
-    
-    
-    @property
-    def status(self):
-        return self._status
-
-    @property
-    def status_on(self):
-        return self._status_on
-
-    def __init__(self, status, status_on):
-        self._status = status
-        self._status_on = status_on
-
-class D2_01_09(_PermundoPSC):
-    """Permundo PSC132/234 1-Channel Relay"""
-
-
 
 
 
