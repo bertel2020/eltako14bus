@@ -145,3 +145,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Add upstream device lookup data and template helpers (12df3ca). Catalog entries
   are descriptive, not proof of hardware support. Templates exclude missing codecs.
 - Return copies from lookup helpers; no discovery or configuration is changed.
+
+## Unreleased: optional profile metadata
+
+- Add EEP.get_metadata() and eep_metadata.get_metadata() with upstream container
+  API, adapted to this fork’s public properties (CO2 concentration, battery voltage,
+  digital inputs). Omit unvalidated ranges and enum mappings. Codecs stay unchanged.

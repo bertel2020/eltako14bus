@@ -9,6 +9,12 @@ class EEP:
     __sublasses_by_string = {}
 
     @classmethod
+    def get_metadata(cls):
+        """Return optional descriptive metadata without changing codec behavior."""
+        from .eep_metadata import get_metadata
+        return get_metadata(cls)
+
+    @classmethod
     def decode_message(cls, msg):
         raise NotImplementedError
 
