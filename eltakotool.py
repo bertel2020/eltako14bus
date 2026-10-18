@@ -11,6 +11,7 @@ import logging
 
 from typing import Optional
 
+import serial_asyncio_fast
 import xdg.BaseDirectory
 
 from eltakobus import *
@@ -117,11 +118,11 @@ async def fakefam(bus, serverdevice):
     loop = asyncio.get_event_loop()
 
     try:
-        # reader, writer = await serial_asyncio.open_serial_connection(serverdevice, baudrate=57600, loop=loop)
+        # reader, writer = await serial_asyncio_fast.open_serial_connection(serverdevice, baudrate=57600, loop=loop)
         # the above should work as well -- this is a workaround for not-sure-what
         reader = asyncio.StreamReader()
         protocol = asyncio.StreamReaderProtocol(reader)
-        transport, _ = await serial_asyncio.create_serial_connection(loop, lambda: protocol, serverdevice, baudrate=57600)
+        transport, _ = await serial_asyncio_fast.create_serial_connection(loop, lambda: protocol, serverdevice, baudrate=57600)
         writer = asyncio.StreamWriter(transport, protocol, reader, loop)
         await run_fakefam(bus, reader, writer)
     except serial.serialutil.SerialException:

@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.2.2
+
+### Packaging
+
+- Replace the unmaintained pyserial-asyncio with its drop-in replacement
+  pyserial-asyncio-fast (module serial_asyncio_fast), which Home Assistant requires
+  for custom integrations. The serial extra follows.
+- serial_asyncio is no longer re-exported through `from eltakobus import *`.
+
 ## 1.2.1
 
 ### Packaging
