@@ -52,3 +52,35 @@ License
 This was developed by Christian Amsüss <c.amsuess@energyharvesting.at> and Energy Harvesting Solutions 2016-2020.
 
 It is published under the terms of GNU LGPL version 3 or later.
+
+
+## Optional catalog, metadata and teach-in helpers
+
+These APIs are additive and do not configure devices or transmit telegrams.
+Catalog data and helper/container APIs originate from grimmpp/eltako14bus
+(commit `12df3caa923811ff6323746e238bc7d099608428`), adapted for this fork.
+
+```python
+from eltakobus.device_catalog import describe_hw_type, get_device_templates
+from eltakobus.eep_metadata import get_metadata
+from eltakobus.teach_in import build_teach_in_message
+
+info = describe_hw_type("FSR14_4x")
+templates = get_device_templates("light")
+metadata = get_metadata("A5-09-04")  # or EEP.find("A5-09-04").get_metadata()
+message = build_teach_in_message(bytes.fromhex("01020304"), "A5-38-08")
+```
+
+The full catalog also describes devices with profiles this fork does not yet
+implement. Configuration templates exclude those profiles; a catalog row is not
+proof of hardware validation or automatic Home Assistant support. Applications
+should pass their own supported EEP lists when requesting templates.
+
+Metadata describes the public properties of this fork, including `concentration`
+for CO2 and `supply_voltage` for A5-04-02. It intentionally omits unvalidated ranges
+and enumeration mappings. It neither changes nor validates codec behavior.
+
+Teach-in helpers preserve the four payloads/status/outgoing flag used by the
+existing Home Assistant buttons. Building a message does not send it. Unsupported
+profiles return no payload and `build_teach_in_message` raises `ValueError`.
+Existing Home Assistant buttons and configuration remain independent of these APIs.

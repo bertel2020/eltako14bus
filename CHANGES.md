@@ -151,3 +151,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Add EEP.get_metadata() and eep_metadata.get_metadata() with upstream container
   API, adapted to this fork’s public properties (CO2 concentration, battery voltage,
   digital inputs). Omit unvalidated ranges and enum mappings. Codecs stay unchanged.
+
+## Unreleased: optional teach-in helpers
+
+- Add upstream teach-in helpers with all four payloads verified against production
+  HA buttons. Unknown profile filters return no devices. Helpers only build messages;
+  they do not transmit or replace existing Home Assistant buttons.
