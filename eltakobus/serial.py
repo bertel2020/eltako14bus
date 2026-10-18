@@ -6,7 +6,7 @@ import threading
 import queue
 import serial
 
-import serial_asyncio
+import serial_asyncio_fast
 
 from eltakobus import locking
 
@@ -516,7 +516,7 @@ class RS485SerialInterface(BusInterface, asyncio.Protocol):
         if self.transport is not None:
             raise RuntimeError("Serial interface run twice")
         self.transport = asyncio.Future()
-        await serial_asyncio.create_serial_connection(
+        await serial_asyncio_fast.create_serial_connection(
                 loop,
                 protocol_factory=lambda: self,
                 url=self._filename,
