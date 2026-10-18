@@ -2,7 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## 1.2.1
+
+### Packaging
+
+- Declare serial and YAML dependencies required by core imports; keep the serial
+  extra for existing callers. Load optional CoAP lazily and support current aiocoap.
+- Exclude tests from wheels, add reproducible build configuration and CI checks.
+- Preserve the bertel2020 repository URL and continue the existing 1.2 version line.
 
 ### Serial communication
 

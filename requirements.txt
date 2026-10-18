@@ -1,8 +1,7 @@
-serial
-asyncio
-pyserial_asyncio
-pyserial
-aiocoap
-pyyaml
-pyxdg
+# Install runtime dependencies and optional transports/tools from package metadata.
+.[coap,eltakotool]
+
+# Development and distribution checks
 pytest
+build
+twine

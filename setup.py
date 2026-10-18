@@ -2,8 +2,8 @@
 import setuptools
 
 extras_require = {
-    'serial': ['pyserial_asyncio', 'pyserial >= 3.4'],
-    'coap': ['aiocoap == 0.4a1'],
+    'serial': ['pyserial-asyncio', 'pyserial >= 3.4'],
+    'coap': ['aiocoap >= 0.4.17, < 1'],
     # Not usable yet as it's not exported via an entry point
     'eltakotool': ['pyyaml', 'pyxdg'],
 }
@@ -13,19 +13,19 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="eltako14bus",
-    version="1.2",
+    version="1.2.1",
     author="chrysn, grimmpp",
     author_email="chrysn@fsfe.org, grimmpp14@gmail.com",
     description="Library for participating in the Eltako Series 14 RS485 bus",
     url="https://github.com/bertel2020/eltako14bus",
-    packages=setuptools.find_packages(),
+    license="LGPL-3.0-or-later",
+    packages=setuptools.find_packages(include=["eltakobus", "eltakobus.*"]),
+    python_requires=">=3.10",
+    install_requires=["pyserial >= 3.4", "pyserial-asyncio", "PyYAML"],
     extras_require=extras_require,
-    # Not that there'd be tests, but at least it fetches the right dependencies and syntax checks everything
-    tests_require=list(set(sum(extras_require.values(), []))),
     long_description_content_type="text/markdown",
     long_description=long_description,
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
     ],
 )
