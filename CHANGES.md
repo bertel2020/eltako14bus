@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+
+### Serial communication
+
+- Backport serial lifecycle, queue, echo handling and transaction fixes from
+  grimmpp/eltako14bus at 12df3caa923811ff6323746e238bc7d099608428.
+- Make receive waits cancellable, serialize concurrent exchanges, close failed
+  ports, and allow stop() to interrupt reconnect delays.
+- Keep the fork's EEP implementations and custom outgoing telegrams unchanged.
+- Add hardware-independent transport and fork API regression tests.
+
 ## 0.0.74 Exception handling in serial thread extended
 
 ## 0.0.73 Added functions for discovery of devices
