@@ -22,8 +22,8 @@ class EEPMetadataTest(unittest.TestCase):
             co2.field('co2')
         self.assertEqual(get_metadata(eep.A5_04_02).field('supply_voltage').unit, 'V')
         self.assertIsNotNone(get_metadata(eep.A5_30_03).field('digital_input_3'))
-        with self.assertRaises(KeyError):
-            get_metadata('D2-14-40')
+        self.assertEqual(get_metadata('D2-14-40').org, 0xD2)
+        self.assertIsNotNone(get_metadata('d2_14_41').field('contact'))
 
     def test_serialization_does_not_expose_container_state(self):
         metadata = get_metadata(eep.A5_10_06)

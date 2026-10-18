@@ -18,7 +18,7 @@ class DeviceCatalogTest(unittest.TestCase):
                 EEP.find(entry['eep'])
                 if entry.get('sender_eep'):
                     EEP.find(entry['sender_eep'])
-        self.assertNotIn('D2-14-40', [e['eep'] for e in get_device_templates('sensor')])
+        self.assertIn('D2-14-40', [e['eep'] for e in get_device_templates('sensor')])
 
     def test_channel_counts_and_profile_filter(self):
         self.assertEqual(describe_hw_type('FSR14_4x')['address_count'], 4)

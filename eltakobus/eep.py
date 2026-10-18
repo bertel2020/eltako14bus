@@ -529,6 +529,150 @@ class A5_09_04(_CO2Sensor):
 
 
 # ======================================
+# MARK: - VLD (RORG D2)
+# ======================================
+
+def _vld_bits(data, offset, size):
+    """Read an MSB-first bit field from a VLD payload."""
+    if len(data) * 8 < offset + size:
+        raise ValueError("VLD payload is shorter than the EEP profile")
+    value = 0
+    for bit in range(size):
+        absolute = offset + bit
+        value = (value << 1) | ((data[absolute // 8] >> (7 - absolute % 8)) & 1)
+    return value
+
+def _vld_message_data(msg, minimum):
+    if getattr(msg, "org", None) != 0xD2:
+        raise WrongOrgError
+    data = bytes(msg.data)
+    if len(data) < minimum:
+        raise ValueError("VLD payload is too short")
+    return data
+
+def _linear_or_none(raw, maximum, minimum, physical_max):
+    return None if raw > maximum else minimum + (raw / float(maximum)) * (physical_max - minimum)
+
+
+class D2_00_01(EEP):
+    """RCP/window handle controller with temperature and environment data (receive only)."""
+
+    @classmethod
+    def decode_message(cls, msg):
+        data = _vld_message_data(msg, 10)
+        if data[0] != 0:
+            raise NotImplementedError
+        raw_temperature = _vld_bits(data, 40, 8)
+        raw_humidity = _vld_bits(data, 48, 8)
+        raw_illumination = _vld_bits(data, 56, 16)
+        raw_battery = _vld_bits(data, 72, 5)
+        return cls(
+            message_type=data[0], burglary_alarm=_vld_bits(data, 8, 4),
+            protection_alarm=_vld_bits(data, 12, 4), handle_position=_vld_bits(data, 16, 4),
+            window_state=_vld_bits(data, 20, 4), button_right=_vld_bits(data, 24, 4),
+            button_left=_vld_bits(data, 28, 4), motion=_vld_bits(data, 32, 4),
+            vacation_mode=_vld_bits(data, 36, 4),
+            temperature=_linear_or_none(raw_temperature, 250, -20, 60),
+            humidity=None if raw_humidity >= 201 else raw_humidity / 2.0,
+            illumination=None if raw_illumination > 60000 else float(raw_illumination),
+            battery_state=None if raw_battery > 20 else raw_battery * 5)
+
+    def __init__(self, message_type, burglary_alarm, protection_alarm, handle_position, window_state,
+                 button_right, button_left, motion, vacation_mode, temperature, humidity,
+                 illumination, battery_state):
+        self._message_type = message_type
+        self._burglary_alarm = burglary_alarm
+        self._protection_alarm = protection_alarm
+        self._handle_position = handle_position
+        self._window_state = window_state
+        self._button_right = button_right
+        self._button_left = button_left
+        self._motion = motion
+        self._vacation_mode = vacation_mode
+        self._temperature = temperature
+        self._humidity = humidity
+        self._illumination = illumination
+        self._battery_state = battery_state
+
+    message_type = property(lambda self: self._message_type)
+    burglary_alarm = property(lambda self: self._burglary_alarm)
+    protection_alarm = property(lambda self: self._protection_alarm)
+    handle_position = property(lambda self: self._handle_position)
+    window_state = property(lambda self: self._window_state)
+    button_right = property(lambda self: self._button_right)
+    button_left = property(lambda self: self._button_left)
+    motion = property(lambda self: self._motion)
+    vacation_mode = property(lambda self: self._vacation_mode)
+    temperature = property(lambda self: self._temperature)
+    humidity = property(lambda self: self._humidity)
+    illumination = property(lambda self: self._illumination)
+    battery_state = property(lambda self: self._battery_state)
+
+
+class _D2_14(EEP):
+    """Indoor multisensor: temperature, humidity, illumination, acceleration (receive only)."""
+
+    @classmethod
+    def decode_message(cls, msg):
+        data = _vld_message_data(msg, 9)
+        raw_temperature = _vld_bits(data, 0, 10)
+        raw_humidity = _vld_bits(data, 10, 8)
+        raw_illumination = _vld_bits(data, 18, 17)
+        raw_x, raw_y, raw_z = (_vld_bits(data, offset, 10) for offset in (37, 47, 57))
+        return cls(
+            temperature=_linear_or_none(raw_temperature, 1000, -40, 60),
+            humidity=None if raw_humidity >= 201 else raw_humidity / 2.0,
+            illumination=None if raw_illumination > 100000 else float(raw_illumination),
+            acceleration_status=_vld_bits(data, 35, 2),
+            acceleration_x=_linear_or_none(raw_x, 1000, -2.5, 2.5),
+            acceleration_y=_linear_or_none(raw_y, 1000, -2.5, 2.5),
+            acceleration_z=_linear_or_none(raw_z, 1000, -2.5, 2.5),
+            **cls._decode_extra(data))
+
+    @staticmethod
+    def _decode_extra(data):
+        return {}
+
+    def __init__(self, temperature, humidity, illumination, acceleration_status,
+                 acceleration_x, acceleration_y, acceleration_z):
+        self._temperature = temperature
+        self._humidity = humidity
+        self._illumination = illumination
+        self._acceleration_status = acceleration_status
+        self._acceleration_x = acceleration_x
+        self._acceleration_y = acceleration_y
+        self._acceleration_z = acceleration_z
+
+    temperature = property(lambda self: self._temperature)
+    humidity = property(lambda self: self._humidity)
+    illumination = property(lambda self: self._illumination)
+    acceleration_status = property(lambda self: self._acceleration_status)
+    acceleration_x = property(lambda self: self._acceleration_x)
+    acceleration_y = property(lambda self: self._acceleration_y)
+    acceleration_z = property(lambda self: self._acceleration_z)
+
+
+class D2_14_40(_D2_14):
+    """Indoor multisensor (proposal profile, not verified against hardware)"""
+
+
+class D2_14_41(_D2_14):
+    """Indoor multisensor with contact bit (proposal profile, not verified against hardware)"""
+
+    @staticmethod
+    def _decode_extra(data):
+        return {"contact": bool(_vld_bits(data, 67, 1))}
+
+    def __init__(self, temperature, humidity, illumination, acceleration_status,
+                 acceleration_x, acceleration_y, acceleration_z, contact):
+        super().__init__(temperature, humidity, illumination, acceleration_status,
+                         acceleration_x, acceleration_y, acceleration_z)
+        self._contact = contact
+
+    contact = property(lambda self: self._contact)
+
+
+# ======================================
 # MARK: - Central Command
 # ======================================
 

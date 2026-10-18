@@ -175,17 +175,27 @@ class Regular4BSMessage(_4BSMessage):
 
 
 class _VLDMessage(ESP2Message):
+    """A VLD (RORG D2) telegram.
+
+    VLD payloads are variable length (1 to 14 bytes in ESP3), so `data` may be
+    longer than the 4 bytes an ESP2 frame can carry. Such telegrams can be
+    received and decoded, but not serialized to ESP2.
+    """
     org = 0xD2
 
     def __init__(self, address, status, data, outgoing=False):
         self.address = address
         self.status = status
-        self.data = data
+        self.data = bytes(data)
         self.outgoing = outgoing
 
     h_seq = property(lambda self: 3 if self.outgoing else 0)
 
-    body = property(lambda self: bytes(((self.h_seq << 5) + 11, self.org, *self.data, 0, *self.address, self.status)))
+    @property
+    def body(self):
+        if len(self.data) != 4:
+            raise ValueError("Only VLD telegrams with exactly 4 data bytes fit into an ESP2 frame")
+        return bytes(((self.h_seq << 5) + 11, self.org, *self.data, 0, *self.address, self.status))
 
     @classmethod
     def parse(cls, data):
